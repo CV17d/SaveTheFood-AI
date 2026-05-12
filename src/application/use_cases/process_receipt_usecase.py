@@ -31,13 +31,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from datetime import date, timedelta
 from src.domain.entities.food_item import FoodItem
 from src.domain.entities.receipt import Receipt
+from src.domain.interfaces.llm_provider_interface import LLMProviderInterface
 from src.domain.interfaces.ocr_provider_interface import OCRProviderInterface
 from src.domain.interfaces.repository_interfaces import (
     FoodItemRepositoryInterface,
     ReceiptRepositoryInterface,
 )
+from src.shared.data_structures.shelf_life_map import ShelfLifeMap
 
 
 @dataclass
@@ -54,53 +57,45 @@ class ProcessReceiptUseCase:
     """
     Application Use Case: process a receipt image end-to-end.
 
-    Depends ONLY on domain interfaces (ports), never on concrete
-    infrastructure classes. Injected via the DI container.
+    Orchestrates OCR extraction, NLP parsing, and expiration estimation.
     """
 
     def __init__(
         self,
         ocr_provider: OCRProviderInterface,
+        llm_provider: LLMProviderInterface,
         receipt_repo: ReceiptRepositoryInterface,
         food_item_repo: FoodItemRepositoryInterface,
+        shelf_life_map: ShelfLifeMap | None = None,
     ) -> None:
         self._ocr = ocr_provider
+        self._llm = llm_provider
         self._receipt_repo = receipt_repo
         self._food_item_repo = food_item_repo
+        self._shelf_life_map = shelf_life_map or ShelfLifeMap()
 
     def execute(self, image_path: str) -> ProcessReceiptResult:
         """
         Execute the receipt processing pipeline.
-
-        Args:
-            image_path: Filesystem path to the receipt image.
-
-        Returns:
-            ProcessReceiptResult DTO with extraction summary.
         """
-        # 1. Create Receipt entity (State: UPLOADED)
         receipt = Receipt(image_path=image_path)
-
-        # 2. Transition to PROCESSING
         receipt.process()
 
         try:
-            # 3. Extract raw text via OCR Strategy
+            # 1. Extract raw text
             raw_lines: list[str] = self._ocr.extract_text(Path(image_path))
             receipt.raw_text_lines = raw_lines
 
-            # 4. Parse raw lines into FoodItems
+            # 2. Parse and estimate expiration
             items = self._parse_items(raw_lines, receipt.id)
 
-            # 5. Attach items and transition to PARSED
+            # 3. State transitions and persistence
             receipt.items = items
             receipt.mark_parsed()
 
-            # 6. Persist
             self._receipt_repo.save(receipt)
             self._food_item_repo.save_batch(items)
 
-            # 7. Transition to COMPLETED
             receipt.complete()
 
             return ProcessReceiptResult(
@@ -122,13 +117,33 @@ class ProcessReceiptUseCase:
 
     def _parse_items(self, raw_lines: list[str], receipt_id: str) -> list[FoodItem]:
         """
-        Parse raw OCR text lines into FoodItem entities.
-
-        TODO: Implement NLP-based parsing logic in Phase 1.
+        Parse raw lines into FoodItem entities with estimated expiration.
         """
         items: list[FoodItem] = []
         for line in raw_lines:
-            cleaned = line.strip()
-            if cleaned:
-                items.append(FoodItem(name=cleaned, receipt_id=receipt_id))
+            name = line.strip()
+            if not name or len(name) < 3:
+                continue
+            
+            # Simple noise filter (heuristic)
+            if any(token in name.upper() for token in ["TOTAL", "SUBTOTAL", "TAX", "VISA", "CASH", "CHANGE"]):
+                continue
+
+            # 1. Estimate shelf life (O(1) map or LLM fallback)
+            days = self._shelf_life_map.get(name)
+            if days is None:
+                days = self._llm.estimate_shelf_life(name)
+            
+            # 2. If it's likely a food item (shelf life found/estimated)
+            if days > 0:
+                expiration = date.today() + timedelta(days=days)
+                items.append(
+                    FoodItem(
+                        name=name,
+                        receipt_id=receipt_id,
+                        expiration_date=expiration,
+                        confidence_score=0.9 if self._shelf_life_map.contains(name) else 0.7
+                    )
+                )
+        
         return items
