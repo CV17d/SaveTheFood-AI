@@ -44,7 +44,7 @@ a través de un **Grafo Bipartito**.
 
 ## 2. Mapa de Dependencias — Clean Architecture
 
-### Regla de Dependencia (INVIOLABLE)
+### Regla de Dependencia ( INVIOLABLE )
 
 ```
 Las dependencias del código fuente SOLO pueden apuntar HACIA ADENTRO.
