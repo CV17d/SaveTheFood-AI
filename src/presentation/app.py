@@ -92,7 +92,10 @@ def main():
                     st.write(f"Usando: {', '.join(res.ingredients_used)}")
                     st.info(f"Fuente: {res.source}")
                 else:
-                    st.warning("No hay suficientes ingredientes para una receta.")
+                    if "Error" in res.title:
+                        st.error(res.title)
+                    else:
+                        st.warning(res.title)
 
 if __name__ == "__main__":
     main()

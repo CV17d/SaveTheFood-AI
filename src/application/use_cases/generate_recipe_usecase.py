@@ -76,8 +76,12 @@ class GenerateRecipeUseCase:
         # 1. Query expiring items from repository
         expiring_items = self._food_item_repo.find_expiring_within(expiring_within_days)
         
+        # Fallback: If no urgent items, take any available items to avoid empty result
         if not expiring_items:
-            return GenerateRecipeResult("", "No ingredients expiring soon", [], 0, "none")
+            expiring_items = self._food_item_repo.find_all()
+            
+        if not expiring_items:
+            return GenerateRecipeResult("", "No hay ingredientes disponibles en el inventario", [], 0, "none")
 
         # 2. Use ExpirationHeap to prioritize (O(log N)) — Deliverable 3
         heap = ExpirationHeap()
@@ -99,28 +103,37 @@ class GenerateRecipeUseCase:
                 )
 
         # 4. Generate recipe via LLM (Proxy-cached)
-        raw_recipe = self._llm.generate_recipe(ingredient_names, constraints)
+        try:
+            raw_recipe = self._llm.generate_recipe(ingredient_names, constraints)
+            
+            # 5. Build Recipe entity via Factory
+            recipe = RecipeFactory.create(raw_recipe, matched_count=len(ingredient_names))
 
-        # 5. Build Recipe entity via Factory
-        recipe = RecipeFactory.create(raw_recipe, matched_count=len(ingredient_names))
+            # 6. Persist
+            self._recipe_repo.save(recipe)
 
-        # 6. Persist
-        self._recipe_repo.save(recipe)
+            # 7. Update RecipeGraph — Deliverable 5
+            recipe_node = RecipeNode(recipe_id=recipe.id, title=recipe.title)
+            self._graph.add_recipe(recipe_node)
+            for ing in recipe.ingredients:
+                self._graph.add_ingredient(IngredientNode(name=ing))
+                self._graph.add_edge(ing, recipe.id)
 
-        # 7. Update RecipeGraph — Deliverable 5
-        recipe_node = RecipeNode(recipe_id=recipe.id, title=recipe.title)
-        self._graph.add_recipe(recipe_node)
-        for ing in recipe.ingredients:
-            self._graph.add_ingredient(IngredientNode(name=ing))
-            self._graph.add_edge(ing, recipe.id)
-
-        return GenerateRecipeResult(
-            recipe_id=recipe.id,
-            title=recipe.title,
-            ingredients_used=ingredient_names,
-            matched_expiring=recipe.matched_expiring_count,
-            source="llm_generation"
-        )
+            return GenerateRecipeResult(
+                recipe_id=recipe.id,
+                title=recipe.title,
+                ingredients_used=ingredient_names,
+                matched_expiring=recipe.matched_expiring_count,
+                source="llm_generation"
+            )
+        except Exception as e:
+            return GenerateRecipeResult(
+                recipe_id="", 
+                title=f"Error al generar receta: {str(e)}", 
+                ingredients_used=ingredient_names, 
+                matched_expiring=0, 
+                source="error"
+            )
 
 
 class RecipeFactory:
