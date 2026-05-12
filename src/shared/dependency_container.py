@@ -15,13 +15,13 @@ Proxy Pattern Wiring:
 
 from __future__ import annotations
 
-from src.domain.interfaces.llm_provider_interface import LLMProviderInterface
-from src.domain.interfaces.ocr_provider_interface import OCRProviderInterface
 from src.domain.interfaces.repository_interfaces import (
     FoodItemRepositoryInterface,
     ReceiptRepositoryInterface,
     RecipeRepositoryInterface,
 )
+from src.application.use_cases.process_receipt_usecase import ProcessReceiptUseCase
+from src.application.use_cases.generate_recipe_usecase import GenerateRecipeUseCase
 from src.infrastructure.ai.gemini_cache_proxy import GeminiCacheProxy
 from src.infrastructure.ai.gemini_llm_provider import GeminiLLMProvider
 from src.infrastructure.ocr.gemini_vision_adapter import GeminiVisionAdapter
@@ -117,3 +117,20 @@ class DependencyContainer:
     def recipe_repository(self) -> RecipeRepositoryInterface:
         from src.infrastructure.persistence.sqlalchemy_recipe_repository import SQLAlchemyRecipeRepository
         return SQLAlchemyRecipeRepository(self.db_session())
+
+    # ─── Use Cases ────────────────────────────────────────
+
+    def process_receipt_use_case(self) -> ProcessReceiptUseCase:
+        return ProcessReceiptUseCase(
+            ocr_provider=self.ocr_provider(),
+            llm_provider=self.llm_provider(),
+            receipt_repo=self.receipt_repository(),
+            food_item_repo=self.food_item_repository(),
+        )
+
+    def generate_recipe_use_case(self) -> GenerateRecipeUseCase:
+        return GenerateRecipeUseCase(
+            llm_provider=self.llm_provider(),
+            food_item_repo=self.food_item_repository(),
+            recipe_repo=self.recipe_repository(),
+        )
