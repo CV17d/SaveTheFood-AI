@@ -17,7 +17,7 @@ def init_container():
     api_key = "AIzaSyA1lp7dMlwcKm76P0psFlJcicaRuH6G914"
     return DependencyContainer(
         gemini_api_key=api_key,
-        gemini_model="gemini-1.5-flash-latest",
+        gemini_model="gemini-2.0-flash",
         ocr_strategy=OCR_STRATEGY_GEMINI_VISION
     )
 
