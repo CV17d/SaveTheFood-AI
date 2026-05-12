@@ -10,13 +10,12 @@ from src.shared.dependency_container import DependencyContainer
 def test_ai():
     print("--- Testing SaveTheFood AI Intelligence ---")
     
-    # Initialize container (using the API key provided)
-    # Note: In a real app, this comes from settings/env
-    api_key = "AIzaSyA1lp7dMlwcKm76P0psFlJcicaRuH6G914"
+    # Initialize container (using the new API key)
+    api_key = "AIzaSyDk6Ts_sM1kym4yvthLeiuFYed0pp_csvQ"
     
     container = DependencyContainer(
         gemini_api_key=api_key,
-        gemini_model="gemini-pro" 
+        gemini_model="gemini-flash-latest"
     )
     
     llm = container.llm_provider()

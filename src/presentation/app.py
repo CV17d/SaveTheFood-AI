@@ -13,11 +13,11 @@ from src.application.use_cases.process_receipt_usecase import ProcessReceiptUseC
 from src.application.use_cases.generate_recipe_usecase import GenerateRecipeUseCase
 
 def init_container():
-    # Using the key provided in the context
-    api_key = "AIzaSyA1lp7dMlwcKm76P0psFlJcicaRuH6G914"
+    # Using the working new key provided by the user
+    api_key = "AIzaSyDk6Ts_sM1kym4yvthLeiuFYed0pp_csvQ"
     return DependencyContainer(
         gemini_api_key=api_key,
-        gemini_model="gemini-2.0-flash",
+        gemini_model="gemini-flash-latest",
         ocr_strategy=OCR_STRATEGY_GEMINI_VISION
     )
 
