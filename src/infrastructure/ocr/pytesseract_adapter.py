@@ -45,25 +45,20 @@ class PyTesseractAdapter(OCRProviderInterface):
             OCRExtractionError: If extraction fails.
         """
         try:
-            # TODO: Implement OpenCV preprocessing + PyTesseract extraction
-            # import cv2
-            # import pytesseract
-            #
-            # if self._tesseract_cmd:
-            #     pytesseract.pytesseract.tesseract_cmd = self._tesseract_cmd
-            #
-            # img = cv2.imread(str(image_path))
-            # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            # thresh = cv2.adaptiveThreshold(
-            #     gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-            # )
-            # text = pytesseract.image_to_string(thresh)
-            # return [line.strip() for line in text.split("\n") if line.strip()]
+            import cv2
+            import pytesseract
 
-            raise NotImplementedError("PyTesseract extraction — Phase 1 deliverable.")
+            if self._tesseract_cmd:
+                pytesseract.pytesseract.tesseract_cmd = self._tesseract_cmd
 
-        except NotImplementedError:
-            raise
+            img = cv2.imread(str(image_path))
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            thresh = cv2.adaptiveThreshold(
+                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+            )
+            text = pytesseract.image_to_string(thresh)
+            return [line.strip() for line in text.split("\n") if line.strip()]
+
         except Exception as e:
             raise OCRExtractionError(f"PyTesseract extraction failed: {e}") from e
 
