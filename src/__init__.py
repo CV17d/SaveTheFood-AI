@@ -1,0 +1,1 @@
+"""SaveTheFood AI — Root package."""

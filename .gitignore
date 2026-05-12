@@ -1,0 +1,47 @@
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ─── Virtual Environment ──────────────────────────────────
+.venv/
+venv/
+env/
+
+# ─── IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Environment Variables ────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Database ─────────────────────────────────────────────
+data/db/*.db
+data/db/*.sqlite3
+
+# ─── Jupyter Notebooks ───────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── Testing ──────────────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# ─── OS ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Docker ───────────────────────────────────────────────
+*.log

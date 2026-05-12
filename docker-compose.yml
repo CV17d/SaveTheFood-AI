@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  # ─── SaveTheFood AI Application ─────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: savethefood-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./assets:/app/assets
+    depends_on:
+      - db-init
+    restart: unless-stopped
+    networks:
+      - savethefood-net
+
+  # ─── Database Initialization ────────────────────────────
+  db-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: savethefood-db-init
+    command: ["python", "scripts/migrate_db.py"]
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    networks:
+      - savethefood-net
+
+networks:
+  savethefood-net:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
