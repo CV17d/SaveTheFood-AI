@@ -42,13 +42,15 @@ infrastructure/
 
 | Archivo | Estado | Fase |
 |---------|--------|------|
-| `ocr/pytesseract_adapter.py` | 🔧 Stub | Fase 2 — requiere lógica OpenCV |
-| `ocr/gemini_vision_adapter.py` | 🔧 Stub | Fase 2 — requiere API multimodal |
+| `ocr/pytesseract_adapter.py` | ✅ Completo | Fase 2 |
+| `ocr/gemini_vision_adapter.py` | ✅ Completo | Fase 2 |
 | `ai/gemini_llm_provider.py` | 🔧 Stub | Fase 2 — requiere prompt engineering |
 | `ai/gemini_cache_proxy.py` | ✅ Completo | Proxy Pattern funcional |
 | `persistence/database_session.py` | ✅ Completo | Engine + session lifecycle |
 | `persistence/models.py` | ✅ Completo | 3 tablas ORM |
 | `persistence/sqlalchemy_food_repository.py` | ✅ Completo | CRUD + mappers |
+| `persistence/sqlalchemy_receipt_repository.py` | ✅ Completo | CRUD + mappers |
+| `persistence/sqlalchemy_recipe_repository.py` | ✅ Completo | CRUD + mappers |
 
 ## Protocolo de Modificación
 

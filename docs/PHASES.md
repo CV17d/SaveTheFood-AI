@@ -47,15 +47,15 @@
 
 **Tareas específicas:**
 
-- [ ] Instalar y configurar `pytesseract` y `opencv-python` en el entorno.
-- [ ] Implementar preprocessing de imagen con OpenCV:
+- [x] Instalar y configurar `pytesseract` y `opencv-python` en el entorno.
+- [x] Implementar preprocessing de imagen con OpenCV:
   - Cargar imagen con `cv2.imread()`.
   - Convertir a escala de grises: `cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)`.
   - Aplicar threshold adaptativo: `cv2.adaptiveThreshold()`.
   - Opcional: deskew, denoise, crop de márgenes.
-- [ ] Extraer texto con `pytesseract.image_to_string()`.
-- [ ] Retornar `List[str]` de líneas de texto (una por bounding box).
-- [ ] Manejar excepciones y lanzar `OCRExtractionError` en caso de fallo.
+- [x] Extraer texto con `pytesseract.image_to_string()`.
+- [x] Retornar `List[str]` de líneas de texto (una por bounding box).
+- [x] Manejar excepciones y lanzar `OCRExtractionError` en caso de fallo.
 
 **Criterio de aceptación:** Procesar exitosamente 3 imágenes de recibos de prueba
 y extraer al menos el 70% de los productos legibles.
@@ -119,10 +119,10 @@ con vencimiento estimado → receta generada priorizando ingredientes urgentes.
 
 **Tareas específicas:**
 
-- [ ] Implementar `SQLAlchemyReceiptRepository` (actualmente solo existe `FoodRepository`).
-- [ ] Implementar `SQLAlchemyRecipeRepository`.
-- [ ] Optimizar `find_expiring_within()` con filtro SQL en lugar de in-memory.
-- [ ] Registrar nuevos repositorios en `DependencyContainer`.
+- [x] Implementar `SQLAlchemyReceiptRepository` (actualmente solo existe `FoodRepository`).
+- [x] Implementar `SQLAlchemyRecipeRepository`.
+- [x] Optimizar `find_expiring_within()` con filtro SQL en lugar de in-memory.
+- [x] Registrar nuevos repositorios en `DependencyContainer`.
 
 **Criterio de aceptación:** Todas las operaciones CRUD persisten y recuperan datos
 correctamente. Tests de integración pasan con SQLite en memoria.
@@ -133,7 +133,7 @@ correctamente. Tests de integración pasan con SQLite en memoria.
 
 **Archivo:** `tests/integration/test_ocr_pipeline.py`
 
-- [ ] Test: PyTesseract extrae texto de imagen de recibo real.
+- [x] Test: PyTesseract extrae texto de imagen de recibo real.
 - [x] Test: ShelfLifeMap retorna datos correctos para items conocidos.
 - [x] Test: Pipeline completo Process Receipt con DB en memoria.
 - [x] Test: GeminiCacheProxy sirve resultados cacheados correctamente.

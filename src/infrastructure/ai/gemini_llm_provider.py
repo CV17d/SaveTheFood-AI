@@ -8,6 +8,8 @@ Integrates with Google's Gemini API for:
 This provider is typically wrapped by GeminiCacheProxy (Proxy Pattern).
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import re
@@ -36,6 +38,7 @@ class GeminiLLMProvider(LLMProviderInterface):
         """
         Generate a recipe using Gemini with RAG context.
         """
+        """
         system_prompt = (
             "You are an expert chef specializing in reducing food waste (Zero Waste Chef). "
             "Your goal is to create delicious recipes using ingredients that are about to expire. "
@@ -63,7 +66,12 @@ class GeminiLLMProvider(LLMProviderInterface):
         )
 
         try:
-            response = self._model.generate_content(prompt)
+            response = self._model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    response_mime_type="application/json"
+                ),
+            )
             content = response.text.strip()
             
             # Clean JSON if it's wrapped in markdown blocks
@@ -81,7 +89,6 @@ class GeminiLLMProvider(LLMProviderInterface):
                 if match:
                     return json.loads(match.group())
                 raise RecipeGenerationError("Failed to parse JSON from Gemini response.")
-                
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
             raise RecipeGenerationError(f"Gemini API failed: {e}") from e

@@ -15,16 +15,22 @@ Proxy Pattern Wiring:
 
 from __future__ import annotations
 
-from src.domain.interfaces.llm_provider_interface import LLMProviderInterface
-from src.domain.interfaces.ocr_provider_interface import OCRProviderInterface
-from src.domain.interfaces.repository_interfaces import FoodItemRepositoryInterface
-from src.infrastructure.ai.gemini_cache_proxy import GeminiCacheProxy
-from src.infrastructure.ai.gemini_llm_provider import GeminiLLMProvider
-from src.infrastructure.ocr.gemini_vision_adapter import GeminiVisionAdapter
-from src.infrastructure.ocr.pytesseract_adapter import PyTesseractAdapter
-from src.infrastructure.persistence.database_session import DatabaseSession
-from src.infrastructure.persistence.sqlalchemy_food_repository import SQLAlchemyFoodRepository
-from src.shared.constants import (
+from ..domain.interfaces.llm_provider_interface import LLMProviderInterface
+from ..domain.interfaces.ocr_provider_interface import OCRProviderInterface
+from ..domain.interfaces.repository_interfaces import (
+    FoodItemRepositoryInterface,
+    ReceiptRepositoryInterface,
+    RecipeRepositoryInterface,
+)
+from ..infrastructure.ai.gemini_cache_proxy import GeminiCacheProxy
+from ..infrastructure.ai.gemini_llm_provider import GeminiLLMProvider
+from ..infrastructure.ocr.gemini_vision_adapter import GeminiVisionAdapter
+from ..infrastructure.ocr.pytesseract_adapter import PyTesseractAdapter
+from ..infrastructure.persistence.database_session import DatabaseSession
+from ..infrastructure.persistence.sqlalchemy_food_repository import SQLAlchemyFoodRepository
+from ..infrastructure.persistence.sqlalchemy_receipt_repository import SQLAlchemyReceiptRepository
+from ..infrastructure.persistence.sqlalchemy_recipe_repository import SQLAlchemyRecipeRepository
+from .constants import (
     DEFAULT_CACHE_MAX_SIZE,
     DEFAULT_CACHE_TTL_SECONDS,
     OCR_STRATEGY_GEMINI_VISION,
@@ -105,3 +111,9 @@ class DependencyContainer:
 
     def food_item_repository(self) -> FoodItemRepositoryInterface:
         return SQLAlchemyFoodRepository(self.db_session())
+
+    def receipt_repository(self) -> ReceiptRepositoryInterface:
+        return SQLAlchemyReceiptRepository(self.db_session())
+
+    def recipe_repository(self) -> RecipeRepositoryInterface:
+        return SQLAlchemyRecipeRepository(self.db_session())

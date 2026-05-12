@@ -39,11 +39,19 @@ class GeminiVisionAdapter(OCRProviderInterface):
             OCRExtractionError: If the API call fails.
         """
         try:
-            # TODO: Implement Gemini Vision multimodal extraction — Phase 2
-            raise NotImplementedError("Gemini Vision extraction — Phase 2 deliverable.")
+            import google.generativeai as genai
+            import PIL.Image
 
-        except NotImplementedError:
-            raise
+            genai.configure(api_key=self._api_key)
+            model = genai.GenerativeModel(self._model_name)
+            
+            img = PIL.Image.open(image_path)
+            prompt = "Extract all food product names and quantities from this supermarket receipt. Return one item per line."
+            
+            response = model.generate_content([prompt, img])
+            text = response.text
+            return [line.strip() for line in text.split("\n") if line.strip()]
+
         except Exception as e:
             raise OCRExtractionError(f"Gemini Vision extraction failed: {e}") from e
 

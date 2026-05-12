@@ -105,3 +105,6 @@ omit = ["tests/*", "scripts/*", "notebooks/*"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
