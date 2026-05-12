@@ -45,16 +45,22 @@ class SQLAlchemyFoodRepository(FoodItemRepositoryInterface):
     def find_expiring_within(self, days: int) -> list[FoodItem]:
         """
         Find items expiring within N days.
-
-        TODO: Optimize with SQL date comparison — Phase 1.
-        Currently filters in-memory after full fetch.
+        Optimized with SQL date comparison.
         """
-        all_items = self.find_all()
-        return [
-            item for item in all_items
-            if item.days_until_expiration is not None
-            and 0 <= item.days_until_expiration <= days
-        ]
+        from datetime import date, timedelta
+        
+        target_date = date.today() + timedelta(days=days)
+        
+        with self._db.get_session() as session:
+            # SQLite stores dates as ISO 8601 strings (YYYY-MM-DD), so string comparison works correctly
+            models = session.query(FoodItemModel).filter(
+                FoodItemModel.expiration_date != "None",
+                FoodItemModel.expiration_date != None,
+                FoodItemModel.expiration_date <= str(target_date),
+                FoodItemModel.expiration_date >= str(date.today())
+            ).all()
+            
+            return [self._to_entity(m) for m in models]
 
     def delete(self, item_id: str) -> None:
         with self._db.get_session() as session:

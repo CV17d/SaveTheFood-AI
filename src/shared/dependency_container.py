@@ -17,7 +17,11 @@ from __future__ import annotations
 
 from src.domain.interfaces.llm_provider_interface import LLMProviderInterface
 from src.domain.interfaces.ocr_provider_interface import OCRProviderInterface
-from src.domain.interfaces.repository_interfaces import FoodItemRepositoryInterface
+from src.domain.interfaces.repository_interfaces import (
+    FoodItemRepositoryInterface,
+    ReceiptRepositoryInterface,
+    RecipeRepositoryInterface,
+)
 from src.infrastructure.ai.gemini_cache_proxy import GeminiCacheProxy
 from src.infrastructure.ai.gemini_llm_provider import GeminiLLMProvider
 from src.infrastructure.ocr.gemini_vision_adapter import GeminiVisionAdapter
@@ -105,3 +109,11 @@ class DependencyContainer:
 
     def food_item_repository(self) -> FoodItemRepositoryInterface:
         return SQLAlchemyFoodRepository(self.db_session())
+
+    def receipt_repository(self) -> ReceiptRepositoryInterface:
+        from src.infrastructure.persistence.sqlalchemy_receipt_repository import SQLAlchemyReceiptRepository
+        return SQLAlchemyReceiptRepository(self.db_session())
+
+    def recipe_repository(self) -> RecipeRepositoryInterface:
+        from src.infrastructure.persistence.sqlalchemy_recipe_repository import SQLAlchemyRecipeRepository
+        return SQLAlchemyRecipeRepository(self.db_session())
