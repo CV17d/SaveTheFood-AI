@@ -111,53 +111,53 @@ INPUT                           PROCESSING                          OUTPUT
 │ Imagen   │    │                    PIPELINE INTERNO                         │
 │ Recibo   │───▶│                                                             │
 │ (.jpg)   │    │  1. ProcessingQueue (FIFO)                                  │
-└──────────┘    │     └─ Encola imagen para procesamiento ordenado            │
-                │                                                             │
-                │  2. Receipt Entity — State Pattern                          │
-                │     └─ UPLOADED → PROCESSING → PARSED → COMPLETED          │
-                │                                                             │
-                │  3. OCR Strategy (PyTesseract | Gemini Vision)              │
-                │     └─ Extrae List[str] de líneas de texto raw              │
-                │                                                             │
-                │  4. Parser → FoodItem Entities                              │
-                │     └─ Normaliza nombres, extrae cantidades                 │
-                │                                                             │
-                │  5. ShelfLifeMap (Hashmap O(1))                             │
-                │     └─ Estima fecha de vencimiento por producto             │
-                │     └─ Fallback: LLM estimation si no existe en el mapa    │
-                │                                                             │
-                │  6. ExpirationHeap (Min-Heap O(log N))                      │
-                │     └─ Inserta FoodItems ordenados por urgencia             │
-                │                                                             │
-                │  7. FoodCategoryTree (Árbol N-ario)                         │
-                │     └─ Clasifica: Dairy → Cheese → Cheddar                 │
-                │                                                             │
-                │  8. SQLAlchemy Repository                                   │
-                │     └─ Persiste entidades en SQLite                         │
-                │                                                             │
-                │  9. RecipeGraph (Grafo Bipartito)                           │
-                │     └─ Conecta ingredientes vencidos con recetas            │
-                │     └─ find_best_recipe() maximiza cobertura               │
-                │                                                             │
-                │  10. GeminiCacheProxy → GeminiLLMProvider                   │
-                │      └─ Genera receta RAG con ingredientes priorizados     │
-                │      └─ Cache O(1) evita llamadas redundantes a API        │
-                │                                                             │
-                │  11. RecipeFactory (Factory Pattern)                         │
-                │      └─ Construye Recipe entity desde respuesta LLM        │
-                │                                                             │  
-                │  12. UndoStack (LIFO)                                       │
-                │      └─ Permite deshacer correcciones manuales de OCR      │
-                └─────────────────────────────────────────────────────────────┘
-                                        │
-                                        ▼
-                ┌─────────────────────────────────────────────────────────────┐
-                │                    STREAMLIT DASHBOARD                       │
-                │  ┌─────────────┐ ┌──────────────┐ ┌──────────────────────┐ │
-                │  │  Inventario  │ │   Recetas    │ │  Métricas Impacto   │ │
-                │  │  (Heap View) │ │  (AI Gen)    │ │  (USD/CO₂ ahorrado) │ │
-                │  └─────────────┘ └──────────────┘ └──────────────────────┘ │
-                └─────────────────────────────────────────────────────────────┘
+│ └──────────┘    │     └─ Encola imagen para procesamiento ordenado            │
+│                 │                                                             │
+│                 │  2. Receipt Entity — State Pattern                          │
+│                 │     └─ UPLOADED → PROCESSING → PARSED → COMPLETED          │
+│                 │                                                             │
+│                 │  3. OCR Strategy (PyTesseract | Gemini Vision)              │
+│                 │     └─ Extrae List[str] de líneas de texto raw              │
+│                 │                                                             │
+│                 │  4. Parser → FoodItem Entities                              │
+│                 │     └─ Normaliza nombres, extrae cantidades                 │
+│                 │                                                             │
+│                 │  5. ShelfLifeMap (Hashmap O(1))                             │
+│                 │     └─ Estima fecha de vencimiento por producto             │
+│                 │     └─ Fallback: LLM estimation si no existe en el mapa    │
+│                 │                                                             │
+│                 │  6. ExpirationHeap (Min-Heap O(log N))                      │
+│                 │     └─ Inserta FoodItems ordenados por urgencia             │
+│                 │                                                             │
+│                 │  7. FoodCategoryTree (Árbol N-ario)                         │
+│                 │     └─ Clasifica: Dairy → Cheese → Cheddar                 │
+│                 │                                                             │
+│                 │  8. SQLAlchemy Repository                                   │
+│                 │     └─ Persiste entidades en SQLite                         │
+│                 │                                                             │
+│                 │  9. RecipeGraph (Grafo Bipartito)                           │
+│                 │     └─ Conecta ingredientes vencidos con recetas            │
+│                 │     └─ find_best_recipe() maximiza cobertura               │
+│                 │                                                             │
+│                 │  10. GeminiCacheProxy → GeminiLLMProvider                   │
+│                 │      └─ Genera receta RAG con ingredientes priorizados     │
+│                 │      └─ Cache O(1) evita llamadas redundantes a API        │
+│                 │                                                             │
+│                 │  11. RecipeFactory (Factory Pattern)                         │
+│                 │      └─ Construye Recipe entity desde respuesta LLM        │
+│                 │                                                             │  
+│                 │  12. UndoStack (LIFO)                                       │
+│                 │      └─ Permite deshacer correcciones manuales de OCR      │
+│                 └─────────────────────────────────────────────────────────────┘
+│                                         │
+│                                         ▼
+│                 ┌─────────────────────────────────────────────────────────────┐
+│                 │                    STREAMLIT DASHBOARD                       │
+│                 │  ┌─────────────┐ ┌──────────────┐ ┌──────────────────────┐ │
+│                 │  │  Inventario  │ │   Recetas    │ │  Métricas Impacto   │ │
+│                 │  │  (Heap View) │ │  (AI Gen)    │ │  (USD/CO₂ ahorrado) │ │
+│                 │  └─────────────┘ └──────────────┘ └──────────────────────┘ │
+│                 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -385,17 +385,17 @@ SaveTheFood-AI/
 │
 ├── config/
 │   └── settings.py                        # Pydantic Settings
-├── scripts/
+│ ├── scripts/
 │   ├── migrate_db.py                      # Crear tablas SQLite
 │   └── seed_shelf_life.py                # Seed del hashmap
-├── data/
+│ ├── data/
 │   ├── raw/                               # Imágenes de recibos
 │   ├── processed/                         # Datos parseados
 │   └── db/                                # SQLite DB files
-├── assets/                                # Archivos estáticos
-├── notebooks/                             # Experimentación Jupyter
-└── docs/
-    └── api_specs.md                       # Especificaciones API
+│ ├── assets/                                # Archivos estáticos
+│ ├── notebooks/                             # Experimentación Jupyter
+│ └── docs/
+│     └── api_specs.md                       # Especificaciones API
 ```
 
 ---

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import ClassVar
 
@@ -34,8 +34,7 @@ class ProcessReceiptUseCase:
     """
     Application Use Case: process a receipt image end-to-end.
 
-    Depends ONLY on domain interfaces (ports), never on concrete
-    infrastructure classes. Injected via the DI container.
+    Orchestrates OCR extraction, NLP parsing, and expiration estimation.
     """
 
     # Global mapping for categories — Deliverable 4
@@ -67,16 +66,16 @@ class ProcessReceiptUseCase:
     def __init__(
         self,
         ocr_provider: OCRProviderInterface,
+        llm_provider: LLMProviderInterface,
         receipt_repo: ReceiptRepositoryInterface,
         food_item_repo: FoodItemRepositoryInterface,
-        llm_provider: LLMProviderInterface | None = None,
         shelf_life_map: ShelfLifeMap | None = None,
         category_tree: FoodCategoryTree | None = None,
     ) -> None:
         self._ocr = ocr_provider
+        self._llm = llm_provider
         self._receipt_repo = receipt_repo
         self._food_item_repo = food_item_repo
-        self._llm = llm_provider
         self._shelf_life_map = shelf_life_map or ShelfLifeMap()
         self._category_tree = category_tree or FoodCategoryTree()
 
@@ -97,29 +96,24 @@ class ProcessReceiptUseCase:
         """
         Execute the receipt processing pipeline.
         """
-        # 1. Create Receipt entity (State: UPLOADED)
         receipt = Receipt(image_path=image_path)
-
-        # 2. Transition to PROCESSING
         receipt.process()
 
         try:
-            # 3. Extract raw text via OCR Strategy
+            # 1. Extract raw text
             raw_lines: list[str] = self._ocr.extract_text(Path(image_path))
             receipt.raw_text_lines = raw_lines
 
-            # 4. Parse raw lines into FoodItems
+            # 2. Parse and estimate expiration
             items = self._parse_items(raw_lines, receipt.id)
 
-            # 5. Attach items and transition to PARSED
+            # 3. State transitions and persistence
             receipt.items = items
             receipt.mark_parsed()
 
-            # 6. Persist
             self._receipt_repo.save(receipt)
             self._food_item_repo.save_batch(items)
 
-            # 7. Transition to COMPLETED
             receipt.complete()
 
             return ProcessReceiptResult(
@@ -142,13 +136,18 @@ class ProcessReceiptUseCase:
     def _parse_items(self, raw_lines: list[str], receipt_id: str) -> list[FoodItem]:
         """
         Parse raw OCR text lines into FoodItem entities.
+        Includes noise filtering and shelf-life estimation (O(1) + LLM fallback).
         """
         items: list[FoodItem] = []
         purchase_date = date.today()
 
         for line in raw_lines:
             raw_name = line.strip()
-            if not raw_name:
+            if not raw_name or len(raw_name) < 3:
+                continue
+
+            # Noise filtering (from origin/main)
+            if any(token in raw_name.upper() for token in ["TOTAL", "SUBTOTAL", "TAX", "VISA", "CASH", "CHANGE", "PAGO", "VUELTA"]):
                 continue
 
             # 1. Normalize name
@@ -163,8 +162,11 @@ class ProcessReceiptUseCase:
 
             # 4. Fallback to LLM if not in map
             if shelf_life is None and self._llm:
-                shelf_life = self._llm.estimate_shelf_life(normalized_name)
-                source = "llm_estimate"
+                try:
+                    shelf_life = self._llm.estimate_shelf_life(normalized_name)
+                    source = "llm_estimate"
+                except Exception:
+                    shelf_life = None
             
             # Default fallback if everything fails
             if shelf_life is None:
@@ -184,7 +186,8 @@ class ProcessReceiptUseCase:
                 receipt_id=receipt_id,
                 purchase_date=purchase_date,
                 expiration_date=exp_vo.estimated_date,
-                category_path=category_path
+                category_path=category_path,
+                confidence_score=0.9 if source == "shelf_life_map" else 0.7
             )
 
             # 7. Insert into FoodCategoryTree — Deliverable 4

@@ -17,7 +17,7 @@
 
 ## 📋 Descripción
 
-**SaveTheFood AI** ingiere recibos de supermercado mediante OCR, extrae los productos
+**SaveTheFood AI**  ingiere recibos de supermercado mediante OCR, extrae los productos
 alimenticios, estima sus fechas de vencimiento, y genera recetas inteligentes que
 priorizan los ingredientes próximos a vencer — todo a través de un motor RAG
 alimentado por Google Gemini.

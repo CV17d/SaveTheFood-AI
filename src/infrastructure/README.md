@@ -44,7 +44,7 @@ infrastructure/
 |---------|--------|------|
 | `ocr/pytesseract_adapter.py` | ✅ Completo | Fase 2 |
 | `ocr/gemini_vision_adapter.py` | ✅ Completo | Fase 2 |
-| `ai/gemini_llm_provider.py` | 🔧 Stub | Fase 2 — requiere prompt engineering |
+| `ai/gemini_llm_provider.py` | ✅ Completo | Fase 2 — prompt engineering real |
 | `ai/gemini_cache_proxy.py` | ✅ Completo | Proxy Pattern funcional |
 | `persistence/database_session.py` | ✅ Completo | Engine + session lifecycle |
 | `persistence/models.py` | ✅ Completo | 3 tablas ORM |

@@ -11,7 +11,7 @@
 | Fase | Responsable | Estado | Entregables |
 |------|-------------|--------|-------------|
 | **Fase 1** — Core & Ingestion | Arquitecto (Completada) | ✅ Finalizada | Arquitectura, interfaces, DI, EDs, tests unitarios |
-| **Fase 2** — Intelligence Engine | Desarrollador B | 🔲 Pendiente | OCR real, Gemini API, lógica de EDs en pipeline |
+| **Fase 2** — Intelligence Engine | Desarrollador B | 🔧 En Progreso | OCR real, Gemini API, lógica de EDs en pipeline |
 | **Fase 3** — Dashboard & UI | Desarrollador C | 🔲 Pendiente | Streamlit, Plotly, ViewModels, tests E2E |
 
 ---
