@@ -267,12 +267,13 @@ INPUT                           PROCESSING                          OUTPUT
 | `shared/data_structures/recipe_graph.py` | ✅ COMPLETO | Grafo bipartito con ranking |
 | `shared/data_structures/shelf_life_map.py` | ✅ COMPLETO | Hashmap con 40+ entradas |
 | `shared/dependency_container.py` | ✅ COMPLETO | DI container con Strategy + Proxy wiring |
+| `infrastructure/ai/gemini_llm_provider.py` | ✅ COMPLETO | prompt engineering + JSON parsing |
 | `infrastructure/ai/gemini_cache_proxy.py` | ✅ COMPLETO | Proxy Pattern con TTL + eviction |
 | `infrastructure/persistence/database_session.py` | ✅ COMPLETO | SQLAlchemy engine/session |
 | `infrastructure/persistence/models.py` | ✅ COMPLETO | ORM models para 3 tablas |
 | `infrastructure/persistence/sqlalchemy_food_repository.py` | ✅ COMPLETO | Repository con mappers entity↔model |
-| `application/use_cases/process_receipt_usecase.py` | ✅ COMPLETO | Pipeline orquestador |
-| `application/use_cases/generate_recipe_usecase.py` | ✅ COMPLETO | RecipeFactory + LLM invocation |
+| `application/use_cases/process_receipt_usecase.py` | ✅ COMPLETO | Pipeline + Queue/Map/Tree integration |
+| `application/use_cases/generate_recipe_usecase.py` | ✅ COMPLETO | RAG + Heap/Graph integration |
 | `application/services/dashboard_metrics_service.py` | ✅ COMPLETO | Métricas económicas/ambientales |
 | `application/dtos/*.py` | ✅ COMPLETO | DTOs frozen para UI |
 | `tests/unit/test_food_item.py` | ✅ COMPLETO | Tests para 7 data structures + entity |
@@ -285,7 +286,6 @@ INPUT                           PROCESSING                          OUTPUT
 |---------|------|-------------|
 | `infrastructure/ocr/pytesseract_adapter.py` | Fase 2 | Lógica OpenCV + PyTesseract |
 | `infrastructure/ocr/gemini_vision_adapter.py` | Fase 2 | Llamada multimodal a Gemini API |
-| `infrastructure/ai/gemini_llm_provider.py` | Fase 2 | Prompt engineering + parsing JSON |
 | `presentation/app.py` | Fase 3 | Streamlit multipage setup |
 | `presentation/components/sidebar.py` | Fase 3 | Navegación + upload widget |
 | `presentation/components/charts.py` | Fase 3 | Plotly sunburst/treemap/gauges |
