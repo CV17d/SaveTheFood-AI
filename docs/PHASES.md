@@ -11,7 +11,7 @@
 | Fase | Responsable | Estado | Entregables |
 |------|-------------|--------|-------------|
 | **Fase 1** — Core & Ingestion | Arquitecto (Completada) | ✅ Finalizada | Arquitectura, interfaces, DI, EDs, tests unitarios |
-| **Fase 2** — Intelligence Engine | Desarrollador B | 🔲 Pendiente | OCR real, Gemini API, lógica de EDs en pipeline |
+| **Fase 2** — Intelligence Engine | Desarrollador B | 🔧 En Progreso | OCR real, Gemini API, lógica de EDs en pipeline |
 | **Fase 3** — Dashboard & UI | Desarrollador C | 🔲 Pendiente | Streamlit, Plotly, ViewModels, tests E2E |
 
 ---
@@ -69,16 +69,16 @@ y extraer al menos el 70% de los productos legibles.
 
 **Tareas específicas:**
 
-- [ ] Inicializar cliente Gemini: `google.generativeai.configure(api_key=...)`.
-- [ ] Diseñar prompt estructurado para `generate_recipe()`:
+- [x] Inicializar cliente Gemini: `google.generativeai.configure(api_key=...)`.
+- [x] Diseñar prompt estructurado para `generate_recipe()`:
   - Input: lista de ingredientes + constraints opcionales.
   - Output esperado: JSON con `title`, `description`, `ingredients`, `steps`, `tags`.
   - Incluir system prompt con rol de chef experto en reducción de desperdicio.
-- [ ] Parsear respuesta JSON del LLM y manejar malformed responses.
-- [ ] Implementar `estimate_shelf_life()`:
+- [x] Parsear respuesta JSON del LLM y manejar malformed responses.
+- [x] Implementar `estimate_shelf_life()`:
   - Prompt: "¿Cuántos días dura {item_name} después de la compra?"
   - Extraer número entero de la respuesta.
-- [ ] Integrar con `GeminiCacheProxy` (ya implementado — solo verificar wiring).
+- [x] Integrar con `GeminiCacheProxy` (ya implementado — solo verificar wiring).
 
 **Criterio de aceptación:** Generar una receta válida con JSON parseable a partir
 de 5 ingredientes de ejemplo. Shelf-life estimation retorna enteros razonables.
@@ -94,11 +94,11 @@ de 5 ingredientes de ejemplo. Shelf-life estimation retorna enteros razonables.
 - [ ] Integrar `ProcessingQueue` en `ProcessReceiptUseCase`:
   - Encolar imágenes al recibir múltiples uploads.
   - Desencolar y procesar en orden FIFO.
-- [ ] Integrar `ShelfLifeMap` en el parsing de FoodItems:
+- [x] Integrar `ShelfLifeMap` en el parsing de FoodItems:
   - Buscar cada item en el hashmap (O(1)).
   - Si no existe, invocar `LLMProvider.estimate_shelf_life()` como fallback.
   - Almacenar resultado en `FoodItem.expiration_date`.
-- [ ] Integrar `ExpirationHeap` en `GenerateRecipeUseCase`:
+- [x] Integrar `ExpirationHeap` en `GenerateRecipeUseCase`:
   - Construir heap desde items del repositorio.
   - Extraer top-N más urgentes con `extract_top_n()`.
 - [ ] Integrar `FoodCategoryTree`:
