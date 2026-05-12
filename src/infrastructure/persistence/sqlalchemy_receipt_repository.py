@@ -51,25 +51,44 @@ class SQLAlchemyReceiptRepository(ReceiptRepositoryInterface):
         return ReceiptModel(
             id=entity.id,
             image_path=str(entity.image_path),
-            state=entity.state.value,
-            raw_text="\n".join(entity.raw_text) if entity.raw_text else None,
+            state=entity.state.name,
+            raw_text="\n".join(entity.raw_text_lines) if entity.raw_text_lines else None,
             failure_reason=entity.failure_reason,
             uploaded_at=entity.uploaded_at,
-            updated_at=entity.updated_at,
+            # updated_at is handled by SQLAlchemy server_default/onupdate
         )
 
     @staticmethod
     def _to_entity(model: ReceiptModel) -> Receipt:
-        from pathlib import Path
-        from src.domain.entities.receipt import ReceiptState
+        from src.domain.entities.receipt import (
+            ReceiptState, 
+            UploadedState, ProcessingState, ParsedState, FailedState, CompletedState
+        )
         
         entity = Receipt(
             id=model.id,
-            image_path=Path(model.image_path),
+            image_path=str(model.image_path),
+            uploaded_at=model.uploaded_at,
         )
-        entity.state = ReceiptState(model.state)
-        entity.raw_text = model.raw_text.split("\n") if model.raw_text else []
-        entity.failure_reason = model.failure_reason
-        entity.uploaded_at = model.uploaded_at
-        entity.updated_at = model.updated_at
+        
+        # Restore raw text lines
+        entity.raw_text_lines = model.raw_text.split("\n") if model.raw_text else []
+        
+        # Restore State Pattern internal state
+        state_enum = ReceiptState[model.state] if isinstance(model.state, str) else ReceiptState.UPLOADED
+        entity._state = state_enum
+        
+        # Restore appropriate state handler
+        handlers = {
+            ReceiptState.UPLOADED: UploadedState,
+            ReceiptState.PROCESSING: ProcessingState,
+            ReceiptState.PARSED: ParsedState,
+            ReceiptState.FAILED: FailedState,
+            ReceiptState.COMPLETED: CompletedState,
+        }
+        handler_class = handlers.get(state_enum, UploadedState)
+        entity._state_handler = handler_class()
+        
+        entity._failure_reason = model.failure_reason
+        
         return entity
