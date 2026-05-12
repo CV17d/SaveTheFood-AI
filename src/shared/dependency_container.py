@@ -28,6 +28,8 @@ from src.infrastructure.ocr.gemini_vision_adapter import GeminiVisionAdapter
 from src.infrastructure.ocr.pytesseract_adapter import PyTesseractAdapter
 from src.infrastructure.persistence.database_session import DatabaseSession
 from src.infrastructure.persistence.sqlalchemy_food_repository import SQLAlchemyFoodRepository
+from src.infrastructure.persistence.sqlalchemy_receipt_repository import SQLAlchemyReceiptRepository
+from src.infrastructure.persistence.sqlalchemy_recipe_repository import SQLAlchemyRecipeRepository
 from src.shared.constants import (
     DEFAULT_CACHE_MAX_SIZE,
     DEFAULT_CACHE_TTL_SECONDS,
@@ -111,9 +113,7 @@ class DependencyContainer:
         return SQLAlchemyFoodRepository(self.db_session())
 
     def receipt_repository(self) -> ReceiptRepositoryInterface:
-        from src.infrastructure.persistence.sqlalchemy_receipt_repository import SQLAlchemyReceiptRepository
         return SQLAlchemyReceiptRepository(self.db_session())
 
     def recipe_repository(self) -> RecipeRepositoryInterface:
-        from src.infrastructure.persistence.sqlalchemy_recipe_repository import SQLAlchemyRecipeRepository
         return SQLAlchemyRecipeRepository(self.db_session())
