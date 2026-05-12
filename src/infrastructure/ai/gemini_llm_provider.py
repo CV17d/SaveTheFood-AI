@@ -38,7 +38,6 @@ class GeminiLLMProvider(LLMProviderInterface):
         """
         Generate a recipe using Gemini with RAG context.
         """
-        """
         system_prompt = (
             "You are an expert chef specializing in reducing food waste (Zero Waste Chef). "
             "Your goal is to create delicious recipes using ingredients that are about to expire. "
