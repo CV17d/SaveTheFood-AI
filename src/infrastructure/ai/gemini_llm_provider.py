@@ -39,10 +39,10 @@ class GeminiLLMProvider(LLMProviderInterface):
         Generate a recipe using Gemini with RAG context.
         """
         system_prompt = (
-            "Eres un chef experto especializado en reducir el desperdicio de alimentos (Zero Waste Chef). "
-            "Tu objetivo es crear recetas deliciosas utilizando ingredientes que están a punto de vencer. "
-            "IMPORTANTE: Toda la respuesta (título, descripción, ingredientes, pasos y etiquetas) DEBE ESTAR EN ESPAÑOL. "
-            "Responde ÚNICAMENTE en formato JSON válido."
+            "TRABAJA EXCLUSIVAMENTE EN ESPAÑOL. Eres un Chef Zero Waste experto. "
+            "Tu misión es ayudar a los usuarios a cocinar con lo que tienen para evitar el desperdicio. "
+            "REGLA CRÍTICA: La respuesta completa, incluyendo títulos, descripciones, nombres de ingredientes "
+            "y pasos de preparación, DEBE ESTAR ESCRITA EN ESPAÑOL. No uses inglés bajo ninguna circunstancia."
         )
         
         ingredients_str = ", ".join(ingredients)
@@ -50,18 +50,18 @@ class GeminiLLMProvider(LLMProviderInterface):
         
         prompt = (
             f"{system_prompt}\n\n"
-            f"Ingredientes disponibles: {ingredients_str}\n"
+            f"Ingredientes disponibles (pueden venir en inglés, pero tú debes responder en español): {ingredients_str}\n"
             f"Restricciones: {constraints_str}\n\n"
-            "Genera una receta que maximice el uso de estos ingredientes. "
-            "La respuesta JSON debe tener exactamente estas llaves en español:\n"
+            "Genera una receta creativa. "
+            "Responde ÚNICAMENTE en formato JSON con esta estructura exacta y todo el contenido en ESPAÑOL:\n"
             "{\n"
-            "  \"title\": \"título de la receta\",\n"
-            "  \"description\": \"breve descripción\",\n"
-            "  \"ingredients\": [\"lista de ingredientes con cantidades\"],\n"
-            "  \"steps\": [\"pasos detallados de la preparación\"],\n"
-            "  \"estimated_time_minutes\": int,\n"
-            "  \"servings\": int,\n"
-            "  \"tags\": [\"etiquetas como 'rápido', 'saludable', etc.\"]\n"
+            "  \"title\": \"Título creativo en español\",\n"
+            "  \"description\": \"Descripción apetitosa en español\",\n"
+            "  \"ingredients\": [\"Ingrediente 1 con su cantidad en español\", \"Ingrediente 2...\"],\n"
+            "  \"steps\": [\"Paso 1 en español\", \"Paso 2 en español...\"],\n"
+            "  \"estimated_time_minutes\": 20,\n"
+            "  \"servings\": 2,\n"
+            "  \"tags\": [\"etiqueta1\", \"etiqueta2\"]\n"
             "}"
         )
 
