@@ -39,28 +39,29 @@ class GeminiLLMProvider(LLMProviderInterface):
         Generate a recipe using Gemini with RAG context.
         """
         system_prompt = (
-            "You are an expert chef specializing in reducing food waste (Zero Waste Chef). "
-            "Your goal is to create delicious recipes using ingredients that are about to expire. "
-            "Respond ONLY in valid JSON format."
+            "Eres un chef experto especializado en reducir el desperdicio de alimentos (Zero Waste Chef). "
+            "Tu objetivo es crear recetas deliciosas utilizando ingredientes que están a punto de vencer. "
+            "IMPORTANTE: Toda la respuesta (título, descripción, ingredientes, pasos y etiquetas) DEBE ESTAR EN ESPAÑOL. "
+            "Responde ÚNICAMENTE en formato JSON válido."
         )
         
         ingredients_str = ", ".join(ingredients)
-        constraints_str = json.dumps(constraints) if constraints else "None"
+        constraints_str = json.dumps(constraints) if constraints else "Ninguna"
         
         prompt = (
             f"{system_prompt}\n\n"
-            f"Ingredients available: {ingredients_str}\n"
-            f"Constraints: {constraints_str}\n\n"
-            "Generate a recipe that maximizes the use of these ingredients. "
-            "The JSON response must have exactly these keys:\n"
+            f"Ingredientes disponibles: {ingredients_str}\n"
+            f"Restricciones: {constraints_str}\n\n"
+            "Genera una receta que maximice el uso de estos ingredientes. "
+            "La respuesta JSON debe tener exactamente estas llaves en español:\n"
             "{\n"
-            "  \"title\": \"string\",\n"
-            "  \"description\": \"string\",\n"
-            "  \"ingredients\": [\"string\"],\n"
-            "  \"steps\": [\"string\"],\n"
+            "  \"title\": \"título de la receta\",\n"
+            "  \"description\": \"breve descripción\",\n"
+            "  \"ingredients\": [\"lista de ingredientes con cantidades\"],\n"
+            "  \"steps\": [\"pasos detallados de la preparación\"],\n"
             "  \"estimated_time_minutes\": int,\n"
             "  \"servings\": int,\n"
-            "  \"tags\": [\"string\"]\n"
+            "  \"tags\": [\"etiquetas como 'rápido', 'saludable', etc.\"]\n"
             "}"
         )
 
