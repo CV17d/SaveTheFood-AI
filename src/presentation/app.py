@@ -61,7 +61,7 @@ def main():
         initial_sidebar_state="expanded"
     )
     apply_custom_styles()
-       container = init_container()
+    container = init_container()
     metrics_service = DashboardMetricsService(
         container.food_item_repository(),
         container.recipe_repository()
@@ -178,7 +178,6 @@ def main():
         c3.metric("Items Salvados", stats.items_saved_by_recipes, "↑")
         
         st.info("Estas métricas se calculan basándose en los productos que consumes antes de su fecha de vencimiento.")
-sumes antes de su fecha de vencimiento.")
 
 if __name__ == "__main__":
     main()
