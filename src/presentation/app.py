@@ -61,9 +61,11 @@ def main():
         initial_sidebar_state="expanded"
     )
     apply_custom_styles()
-    
-    container = init_container()
-    metrics_service = DashboardMetricsService(container.food_item_repository())
+       container = init_container()
+    metrics_service = DashboardMetricsService(
+        container.food_item_repository(),
+        container.recipe_repository()
+    )
     
     # --- SIDEBAR ---
     with st.sidebar:
@@ -152,7 +154,7 @@ def main():
                 """, unsafe_allow_html=True)
                 
                 # Try to find the full recipe object to show details
-                recipe_obj = container.recipe_repository().find_all()[-1] # Get last saved
+                recipe_obj = container.recipe_repository().find_by_id(res.recipe_id)
                 if recipe_obj:
                     col_ing, col_steps = st.columns(2)
                     with col_ing:
@@ -168,14 +170,15 @@ def main():
 
     with tab3:
         st.header("Tu Impacto Positivo")
-        stats = metrics_service.get_impact_metrics()
+        stats = metrics_service.compute()
         
         c1, c2, c3 = st.columns(3)
-        c1.metric("Dinero Ahorrado", f"${stats['money_saved_usd']:.2f}", "↑ 12%")
-        c2.metric("CO₂ Mitigado", f"{stats['co2_mitigated_kg']:.1f} kg", "↑ 5%")
-        c3.metric("Comidas Salvadas", int(len(items) * 0.8), "↑")
+        c1.metric("Dinero Ahorrado", f"${stats.estimated_money_saved_usd:.2f}", "↑ 12%")
+        c2.metric("CO₂ Mitigado", f"{stats.estimated_co2_saved_kg:.1f} kg", "↑ 5%")
+        c3.metric("Items Salvados", stats.items_saved_by_recipes, "↑")
         
         st.info("Estas métricas se calculan basándose en los productos que consumes antes de su fecha de vencimiento.")
+sumes antes de su fecha de vencimiento.")
 
 if __name__ == "__main__":
     main()
